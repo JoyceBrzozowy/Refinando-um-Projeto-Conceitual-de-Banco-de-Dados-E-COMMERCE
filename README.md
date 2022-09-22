@@ -8,27 +8,29 @@ CREATE TABLE ECOMMERCE (
 
   Id int(3),
 
-  Pagamento varchar(50),
+  forma de pagamento varchar(50),
 
-  Entrega varchar(50)
+  status da entrega varchar(50),
+  
+  codigo de rastreio int(5)
 
 );
 
 
-INSERT INTO ECOMMERCE (nome, id, forma de pagamento, status da entrega) VALUES 
+INSERT INTO ECOMMERCE (nome, id, forma de pagamento, status da entrega, codigo de rastreio) VALUES 
 
-  (‘Maria Souza’, 1, ‘Débito’, Pendente),
+  (‘Maria Souza’, 1, ‘Débito’, Pendente, 34567),
 
-  (‘João Silva’, 2, ‘Crédito’, A confirmar),
+  (‘João Silva’, 2, ‘Crédito’, A confirmar, 12345),
 
-  (‘Ana Flores’, 3, ‘Pix’, Concluída),
+  (‘Ana Flores’, 3, ‘Pix’, Concluída, 89076),
 
-  (‘João Santos’, 4, ‘Crédito’, Concluída);
+  (‘João Santos’, 4, ‘Crédito’, Concluída, 34567);
   
   
   
-nome        id forma de pagamento status da entrega
-Maria Souza 1  Débito             Pendente
-João Silva  2  Crédito            A confirmar
-Ana Flores  3  Pix                Concluída
-João Santos 4  Crédito            Concluída
+nome        id forma de pagamento status da entrega codigo de rastreio
+Maria Souza 1  Débito             Pendente          34567
+João Silva  2  Crédito            A confirmar       12345
+Ana Flores  3  Pix                Concluída         89076
+João Santos 4  Crédito            Concluída         34567
