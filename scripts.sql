@@ -125,4 +125,4 @@ create table fornecedor_produto (
 -- TODO: fazer os inserts
 
 -- TODO: fazer os selects
-select * from entrega;
+--select * from entrega;
