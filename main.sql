@@ -1,7 +1,7 @@
--- Criação do banco
+--Criação do banco
 create database ecommerce;
 
--- Coloca o banco em uso
+--Coloca o banco em uso
 use ecommerce;
 
 create table cliente (
