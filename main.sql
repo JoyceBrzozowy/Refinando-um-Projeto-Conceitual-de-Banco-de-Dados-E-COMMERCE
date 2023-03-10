@@ -1,5 +1,5 @@
 --Criação do banco
-```sql
+
 create database ecommerce;
 
 --Coloca o banco em uso
@@ -123,7 +123,7 @@ create table fornecedor_produto (
     constraint foreign key (fornecedor_id) references fornecedor(id),
     constraint foreign key (produto_id) references produto(id)
 );
-```
+
 -- TODO: fazer os inserts
 
 -- TODO: fazer os selects
