@@ -1,3 +1,3 @@
 # Projeto Conceitual de Banco de Dados
 
-Projeto conceitual do E - Commerce 
+Projeto Conceitual do E - Commerce 
