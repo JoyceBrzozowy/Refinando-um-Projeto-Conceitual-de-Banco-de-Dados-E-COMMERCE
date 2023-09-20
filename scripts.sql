@@ -1,126 +1,137 @@
 -- Criação do banco
-create database ecommerce;
+CREATE DATABASE ecommerce;
+GO
 
 -- Coloca o banco em uso
-use ecommerce;
+USE ecommerce;
+GO
 
-create table cliente (
-    id int not null auto_increment,
-    nome varchar(60) not null,
-    identificacao varchar(14) not null comment 'Deve ter o CPF ou CNPJ do cliente',
-    tipo_cliente char(2) not null comment 'Deve conter PF para pessoa física, e PJ para pessoa juridica',
-    constraint primary key (id),
-    constraint check (tipo_cliente = 'PF' or tipo_cliente = 'PJ')
+-- Criação da tabela cliente
+CREATE TABLE cliente (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    nome VARCHAR(60) NOT NULL,
+    identificacao VARCHAR(14) NOT NULL,
+    tipo_cliente CHAR(2) NOT NULL CHECK (tipo_cliente IN ('PF', 'PJ'))
 );
+GO
 
-create table endereco (
-    id int not null auto_increment,
-    rua varchar(30) not null,
-    numero int,
-    complemento varchar(30),
-    bairro varchar(30) not null,
-    cidade varchar(30) not null,
-    estado char(2) not null,
-    cep varchar(8) not null,
-    fone varchar(11),
-    cliente_id int not null,
-    constraint primary key (id),
-    constraint foreign key (cliente_id) references cliente(id) on delete cascade
+-- Criação da tabela endereco
+CREATE TABLE endereco (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    rua VARCHAR(30) NOT NULL,
+    numero INT,
+    complemento VARCHAR(30),
+    bairro VARCHAR(30) NOT NULL,
+    cidade VARCHAR(30) NOT NULL,
+    estado CHAR(2) NOT NULL,
+    cep VARCHAR(8) NOT NULL,
+    fone VARCHAR(11),
+    cliente_id INT NOT NULL,
+    FOREIGN KEY (cliente_id) REFERENCES cliente(id) ON DELETE CASCADE
 );
+GO
 
-create table entrega (
-    id int not null auto_increment,
-    empresa varchar(45) not null,
-    data_prevista date not null,
-    data_entrega date,
-    status_entrega smallint not null comment '0: Aguardando Postagem, 1: Postado, 2: Em transito, 3: Entregue, 4: Cancelado, 5: Devolvido, 6: Extraviado, 7: Furtado/Roubado',
-    valor_frete float not null,
-    codigo_rastreio varchar(30),
-    constraint primary key (id),
-    constraint check (status_entrega in (0,1,2,3,4,5,6,7))
+-- Criação da tabela entrega
+CREATE TABLE entrega (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    empresa VARCHAR(45) NOT NULL,
+    data_prevista DATE NOT NULL,
+    data_entrega DATE,
+    status_entrega SMALLINT NOT NULL CHECK (status_entrega IN (0,1,2,3,4,5,6,7)),
+    valor_frete FLOAT NOT NULL,
+    codigo_rastreio VARCHAR(30)
 );
+GO
 
-create table pagamento (
-    id int not null auto_increment,
-    tipo_pagamento char(1) not null comment 'C: Crédito, D: Débito, P: Pix, B: Boleto bancário',
-    pix_copia_cola varchar(255),
-    numero_cartao varchar(20),
-    data_validade char(6),
-    bandeira_cartao varchar(20),
-    nome_portador varchar(45),
-    identificao varchar(14) not null comment 'Deve receber o CNPJ ou CPF do pagador',
-    codigo_barras varchar(48),
-    emissao_boleto date,
-    vencimento_boleto date,
-    data_recebimento date default null,
-    status_pagamento smallint not null comment '0: Pendente, 1: Negado, 2: Aprovado, 3: Estornado, 4: Chargeback. 5: Cancelado risco, 6: Cancelado outros',
-    data_status timestamp comment 'Recebe a data corrente sempre que o status atualizar',
-    valor float,
-    constraint primary key (id),
-    constraint check (tipo_pagamento in ('CRE','DEB','PIX','BOL')),
-    constraint check (status_pagamento in (0,1,2,3,4,5,6))
+-- Criação da tabela pagamento
+CREATE TABLE pagamento (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    tipo_pagamento CHAR(1) NOT NULL CHECK (tipo_pagamento IN ('C', 'D', 'P', 'B')),
+    pix_copia_cola VARCHAR(255),
+    numero_cartao VARCHAR(20),
+    data_validade CHAR(6),
+    bandeira_cartao VARCHAR(20),
+    nome_portador VARCHAR(45),
+    identificao VARCHAR(14) NOT NULL,
+    codigo_barras VARCHAR(48),
+    emissao_boleto DATE,
+    vencimento_boleto DATE,
+    data_recebimento DATE,
+    status_pagamento SMALLINT NOT NULL CHECK (status_pagamento IN (0,1,2,3,4,5,6)),
+    data_status DATETIME DEFAULT NULL,
+    valor FLOAT
 );
+GO
 
-create table pedido (
-    id int not null auto_increment,
-    status_pedido smallint not null comment '0: Pendente, 1: Aprovado, 2: Cancelado',
-    tipo_cancelamento char(1) comment 'X: para situações que o cliente pede cancelamento, C: Situações de chargeback, R: Cancelamento de risco',
-    cliente_id int not null,
-    entrega_id int not null,
-    pagamento_id int not null,
-    constraint primary key (id),
-    constraint foreign key (cliente_id) references cliente(id),
-    constraint foreign key (entrega_id) references entrega(id),
-    constraint foreign key (pagamento_id) references pagamento(id)
+-- Criação da tabela pedido
+CREATE TABLE pedido (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    status_pedido SMALLINT NOT NULL CHECK (status_pedido IN (0,1,2)),
+    tipo_cancelamento CHAR(1) CHECK (tipo_cancelamento IN ('X', 'C', 'R')),
+    cliente_id INT NOT NULL,
+    entrega_id INT NOT NULL,
+    pagamento_id INT NOT NULL,
+    FOREIGN KEY (cliente_id) REFERENCES cliente(id),
+    FOREIGN KEY (entrega_id) REFERENCES entrega(id),
+    FOREIGN KEY (pagamento_id) REFERENCES pagamento(id)
 );
+GO
 
-create table estoque (
-    id int not null auto_increment,
-    cidade varchar(30),
-    constraint primary key (id)
+-- Criação da tabela estoque
+CREATE TABLE estoque (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    cidade VARCHAR(30)
 );
+GO
 
-create table produto (
-    id int not null auto_increment,
-    nome varchar(30) not null,
-    descricacao text not null,
-    valor float,
-    constraint primary key (id)
+-- Criação da tabela produto
+CREATE TABLE produto (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    nome VARCHAR(30) NOT NULL,
+    descricacao TEXT NOT NULL,
+    valor FLOAT
 );
+GO
 
-create table estoque_produto (
-    estoque_id int not null,
-    produto_id int not null,
-    quantidade int,
-    constraint primary key (estoque_id, produto_id),
-    constraint check (quantidade >= 0),
-    constraint foreign key (estoque_id) references estoque(id),
-    constraint foreign key (produto_id) references produto(id)
+-- Criação da tabela estoque_produto
+CREATE TABLE estoque_produto (
+    estoque_id INT NOT NULL,
+    produto_id INT NOT NULL,
+    quantidade INT CHECK (quantidade >= 0),
+    PRIMARY KEY (estoque_id, produto_id),
+    FOREIGN KEY (estoque_id) REFERENCES estoque(id),
+    FOREIGN KEY (produto_id) REFERENCES produto(id)
 );
+GO
 
-create table pedido_produto (
-    pedido_id int not null,
-    produto_id int not null,
-    quantidade int not null,
-    constraint primary key (pedido_id, produto_id),
-    constraint foreign key (pedido_id) references pedido(id),
-    constraint foreign key (produto_id) references produto(id)
+-- Criação da tabela pedido_produto
+CREATE TABLE pedido_produto (
+    pedido_id INT NOT NULL,
+    produto_id INT NOT NULL,
+    quantidade INT NOT NULL,
+    PRIMARY KEY (pedido_id, produto_id),
+    FOREIGN KEY (pedido_id) REFERENCES pedido(id),
+    FOREIGN KEY (produto_id) REFERENCES produto(id)
 );
+GO
 
-create table fornecedor (
-    id int not null auto_increment,
-    razao_social varchar(45),
-    cnpj char(14) not null,
-    constraint primary key (id)
+-- Criação da tabela fornecedor
+CREATE TABLE fornecedor (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    razao_social VARCHAR(45),
+    cnpj CHAR(14) NOT NULL
 );
+GO
 
-create table fornecedor_produto (
-    fornecedor_id int not null,
-    produto_id int not null,
-    constraint primary key (fornecedor_id, produto_id),
-    constraint foreign key (fornecedor_id) references fornecedor(id),
-    constraint foreign key (produto_id) references produto(id)
+-- Criação da tabela fornecedor_produto
+CREATE TABLE fornecedor_produto (
+    fornecedor_id INT NOT NULL,
+    produto_id INT NOT NULL,
+    PRIMARY KEY (fornecedor_id, produto_id),
+    FOREIGN KEY (fornecedor_id) REFERENCES fornecedor(id),
+    FOREIGN KEY (produto_id) REFERENCES produto(id)
 );
+GO
 
 -- TODO: fazer os inserts
 
